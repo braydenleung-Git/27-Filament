@@ -13,13 +13,28 @@ def read_step_count():
     data = bus.read_i2c_block_data(addr, 0, 4)
     return struct.unpack('<L', bytes(data))[0]
 
-# Start motor
-send_stepper_state(0x01)
-time.sleep(5)
+print("Stepper motor control (I2C)")
+print("Press Enter to toggle ON/OFF. Type 'q' to quit.")
 
-# Stop motor
-send_stepper_state(0x00)
+motor_on = False
 
-# Read steps
-steps = read_step_count()
-print("Steps taken:", steps)
+while True:
+    user_input = input(">>> ")
+
+    if user_input.lower() == 'q':
+        if motor_on:
+            send_stepper_state(0x00)
+        print("Exiting.")
+        break
+
+    motor_on = not motor_on
+
+    if motor_on:
+        print("Stepper motor: ON")
+        send_stepper_state(0x01)
+    else:
+        print("Stepper motor: OFF")
+        send_stepper_state(0x00)
+        time.sleep(0.1)  # Ensure motor has stopped
+        steps = read_step_count()
+        print(f"Total steps: {steps}")
