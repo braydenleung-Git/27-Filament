@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sortament Output</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>Process Output</h2>
+  <ul>
+    <li><strong>Weight Measured:</strong> {{ weight }}</li>
+    <li><strong>Plastic Type:</strong> {{ type }}</li>
+    <li><strong>Estimated Print Time:</strong> {{ print_time }}</li>
+    <li><strong>Filament Diameter:</strong> {{ diameter }}</li>
+    <li><strong>Output Length:</strong> {{ length }}</li>
+    <li><strong>Cost Saved:</strong> {{ cost_saved }}</li>
+  </ul>
+  <button onclick="window.location.href='/'">Return to Home</button>
+</body>
+</html>

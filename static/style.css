@@ -1,0 +1,33 @@
+body {
+  font-family: sans-serif;
+  background-color: #F9FAFB;
+  padding: 2rem;
+  color: #374151;
+}
+
+.card {
+  background-color: white;
+  padding: 2rem;
+  border: 2px solid #C6F6D5;
+  border-radius: 1rem;
+  width: 300px;
+  margin: auto;
+  text-align: center;
+}
+
+button {
+  background-color: #2F855A;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.warning {
+  background-color: #FECACA;
+  border: 2px solid #DC2626;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-top: 1rem;
+}

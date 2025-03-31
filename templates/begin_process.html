@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Sortament Process</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>Ready to Recycle?</h2>
+  <button onclick="document.getElementById('alert').style.display='block'">Begin Process</button>
+  <div id="alert" style="display:none;" class="warning">
+    <p>⚠️ Is there metal on the flap?</p>
+    <form action="/output" method="POST">
+      <button type="submit" name="metal" value="yes">Yes</button>
+      <button type="submit" name="metal" value="no">No</button>
+    </form>
+  </div>
+</body>
+</html>
