@@ -1,33 +1,44 @@
+#include <Wire.h>
 #include <Stepper.h>
 
 const int stepsPerRevolution = 2048;
 Stepper myStepper(stepsPerRevolution, 8, 10, 9, 11);
 
-const int buttonPin = 2;
-
-int stepCount = 0;
-bool wasPressed = false;
+volatile bool shouldRun = false;
+volatile long stepCount = 0;
 
 void setup() {
-  pinMode(buttonPin, INPUT_PULLUP);  // Button connected to GND when pressed
-  myStepper.setSpeed(10);
-  Serial.begin(9600);  // Start serial communication
+  Wire.begin(0x08);  // I2C slave address
+  Wire.onReceive(receiveEvent);  // Master writes
+  Wire.onRequest(requestEvent);  // Master reads
+
+  myStepper.setSpeed(10);  // RPM
+  Serial.begin(9600);
 }
 
 void loop() {
-  bool isPressed = (digitalRead(buttonPin) == LOW);
-
-  if (isPressed) {
+  if (shouldRun) {
     myStepper.step(1);
     stepCount++;
-    wasPressed = true;
-  } else {
-    if (wasPressed) {
-      // Button was just released — report step count
-      Serial.print("Steps taken during button press: ");
-      Serial.println(stepCount);
-      stepCount = 0;
-      wasPressed = false;
+  }
+}
+
+void receiveEvent(int howMany) {
+  if (howMany < 2) return;  // Expect 2 bytes: [ID, STATE]
+
+  byte cmdID = Wire.read();
+  byte state = Wire.read();
+
+  if (cmdID == 0x02) {
+    if (state == 0x01) {
+      shouldRun = true;
+    } else if (state == 0x00) {
+      shouldRun = false;
     }
   }
+}
+
+void requestEvent() {
+  // Respond with 4-byte step count (little-endian)
+  Wire.write((byte*)&stepCount, sizeof(stepCount));
 }
