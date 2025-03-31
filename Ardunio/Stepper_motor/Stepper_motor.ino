@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <Stepper.h>
 
-const int stepsPerRevolution = 2048;
+const int stepsPerRevolution = 200;
 Stepper myStepper(stepsPerRevolution, 8, 10, 9, 11);
 
 volatile bool shouldRun = false;
@@ -12,7 +12,7 @@ void setup() {
   Wire.onReceive(receiveEvent);  // Master writes
   Wire.onRequest(requestEvent);  // Master reads
 
-  myStepper.setSpeed(10);  // RPM
+  myStepper.setSpeed(34);  // RPM
   Serial.begin(9600);
 }
 
