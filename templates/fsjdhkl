@@ -1,0 +1,154 @@
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  # Allow communication with React
+
+@app.route('/api/output-info', methods=['GET'])
+def get_output_info():
+    return jsonify({
+        "weight": "342g",
+        "type": "PLA",
+        "print_time": "4h 15m",
+        "diameter": "1.75mm",
+        "length": "112m",
+        "cost_saved": "$7.90"
+    })
+
+@app.route('/api/begin-process', methods=['POST'])
+def begin_process():
+    # Simulate machine start
+    return jsonify({ "status": "success", "message": "Process started" })
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
+import { useEffect, useState } from 'react';
+
+function FilamentRecyclingUI() {
+  const [output, setOutput] = useState(null);
+
+  const startProcess = async () => {
+    await fetch('http://localhost:5000/api/begin-process', { method: 'POST' });
+    const res = await fetch('http://localhost:5000/api/output-info');
+    const data = await res.json();
+    setOutput(data);
+  };
+
+  return (
+    // Use startProcess() when 'Begin Process' is clicked
+    // Render output data from `output` object
+  );
+}
+
+
+
+
+import { useEffect, useState } from 'react';
+
+function FilamentRecyclingUI() {
+  const [output, setOutput] = useState(null);
+
+  const startProcess = async () => {
+    await fetch('http://localhost:5000/api/begin-process', { method: 'POST' });
+    const res = await fetch('http://localhost:5000/api/output-info');
+    const data = await res.json();
+    setOutput(data);
+  };
+
+  return (
+    // Use startProcess() when 'Begin Process' is clicked
+    // Render output data from `output` object
+  );
+}
+
+
+
+// Sortament – All-in-One Filament Recycling Program UI with Flask API integration
+
+import { useEffect, useState } from 'react';
+
+export default function FilamentRecyclingUI() {
+  const [output, setOutput] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const startProcess = async () => {
+    await fetch('http://localhost:5000/api/begin-process', {
+      method: 'POST'
+    });
+    const res = await fetch('http://localhost:5000/api/output-info');
+    const data = await res.json();
+    setOutput(data);
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center w-full min-h-screen bg-[#E6FFFA] p-10 gap-10 font-serif">
+
+      {/* 1. Login Page */}
+      <section className="text-center">
+        <h1 className="text-5xl font-bold text-blue-700 mb-10">Sortament</h1>
+        <div className="flex flex-col gap-4">
+          <button className="bg-gray-300 px-6 py-3 rounded-md text-2xl">Login</button>
+          <button className="bg-gray-300 px-6 py-3 rounded-md text-2xl">Sign UP</button>
+          <button className="bg-gray-300 px-8 py-4 rounded-md text-2xl">Login With Western ID</button>
+        </div>
+      </section>
+
+      {/* 2. Instructions Page */}
+      <section className="bg-white p-6 rounded-xl shadow-lg max-w-2xl text-left">
+        <h2 className="text-2xl font-bold mb-4">Instructions</h2>
+        <ol className="list-decimal space-y-2 ml-6 text-lg">
+          <li>Place plastic onto flap</li>
+          <li>Login to webpage</li>
+          <li>Press Begin Process</li>
+          <li>Check for metal on the flaps</li>
+          <li>Press OK and wait for machine to finish heat poking process</li>
+          <li>Lift flap and machine will automatically sort plastic into bin</li>
+          <li>See all the output info of the plastic on the website!</li>
+        </ol>
+      </section>
+
+      {/* 3. Begin Process Page */}
+      <section className="text-center">
+        <button className="bg-gray-300 text-4xl px-10 py-6 rounded-md" onClick={() => setShowPopup(true)}>
+          Begin Process
+        </button>
+
+        {/* 4. Warning Popup */}
+        {showPopup && (
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-red-600 text-white p-10 rounded-xl text-center w-[80%] max-w-xl">
+              <h2 className="text-3xl font-bold mb-4">Warning</h2>
+              <p className="text-2xl">Is there any metal on the flaps?</p>
+              <div className="flex justify-center gap-6 mt-6">
+                <button className="bg-white text-red-700 px-4 py-2 rounded-md">Yes</button>
+                <button className="bg-white text-red-700 px-4 py-2 rounded-md" onClick={startProcess}>No</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* 5. Output Information Page */}
+      {output && (
+        <section className="bg-white p-6 rounded-xl shadow max-w-3xl w-full">
+          <h2 className="text-3xl text-blue-700 font-bold mb-6 text-center">All-In-One Filament Recycling Machine</h2>
+          <h3 className="text-2xl font-semibold mb-4">Output Info</h3>
+          <ul className="text-xl space-y-2">
+            <li><strong>Weight:</strong> {output.weight}</li>
+            <li><strong>Plastic Type:</strong> {output.type}</li>
+            <li><strong>Estimated Time to Print:</strong> {output.print_time}</li>
+            <li><strong>Filament Diameter:</strong> {output.diameter}</li>
+            <li><strong>Output Length:</strong> {output.length}</li>
+            <li><strong>Cost Saved:</strong> {output.cost_saved}</li>
+          </ul>
+        </section>
+      )}
+
+    </div>
+  );
+}
