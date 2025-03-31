@@ -6,27 +6,28 @@
 #  https://dronebotworkshop.com
 
 from smbus import SMBus
+import time
 
-addr = 0x8  # bus address
-bus = SMBus(1)  # indicates /dev/ic2-1
+addr = 0x8
+bus = SMBus(1)
 
-numb = 1
+def send_command(cmd_id, value):
+    bus.write_i2c_block_data(addr, cmd_id, [value])
+    print(f"Sent command {cmd_id:#04x} with value {value}")
 
-print("Enter 1 for ON or 0 for OFF")
-while numb == 1:
-
-    ledstate = input(">>>>   ") #user input prompt
-
-    if ledstate == "1":
-        bus.write_byte(addr, 0x1)  # switch it on
-    elif ledstate == "0":
-        bus.write_byte(addr, 0x0)  # switch it on
-    else:
-        numb = 0
+    # Wait for Arduino to report status = 1
     while True:
-        data = bus.read_byte(addr)
-        if data != 0x0:
-            print("Received data:", data)
+        time.sleep(0.1)
+        response = bus.read_i2c_block_data(addr, 0, 2)
+        status, result = response
+        if status == 1:
+            print(f"Arduino done. Result: {result}")
             break
+
+# Example usage
+send_command(0x01, 1)  # Turn LED ON
+send_command(0x02, 5)  # Blink LED 5 times
+send_command(0x01, 0)  # Turn LED OFF
+
 
 

@@ -1,40 +1,64 @@
-/*
-  Arduino Slave for Raspberry Pi Master
-  i2c_slave_ard.ino
-  Connects to Raspberry Pi via I2C
-  
-  DroneBot Workshop 2019
-  https://dronebotworkshop.com
-*/
-
-// Include the Wire library for I2C
 #include <Wire.h>
 
-// LED on pin 13
-const int ledPin = 13; 
+const int ledPin = 13;
+
+volatile byte command = 0;
+volatile byte value = 0;
+volatile byte status = 0;
+volatile byte result = 0;
 
 void setup() {
-  // Join I2C bus as slave with address 8
   Wire.begin(0x8);
-  
-  // Call receiveEvent when data received                
   Wire.onReceive(receiveEvent);
-  
-  // Setup pin 13 as output and turn LED off
+  Wire.onRequest(requestEvent);
+
   pinMode(ledPin, OUTPUT);
   digitalWrite(ledPin, LOW);
 }
 
-// Function that executes whenever data is received from master
-void receiveEvent(int howMany) {
-  while (Wire.available()) { // loop through all but the last
-    char c = Wire.read(); // receive byte as a character
-    digitalWrite(ledPin, c);
-  }
-  // Send a signal back to the master device
-  Wire.write(0x1); // send a single byte with value 0x1
-  
-}
 void loop() {
-  delay(100);
+  if (status == 0) {
+    switch (command) {
+      case 0x01:  // Turn LED ON/OFF
+        if (value == 1) {
+          digitalWrite(ledPin, HIGH);
+          result = 1;
+        } else {
+          digitalWrite(ledPin, LOW);
+          result = 0;
+        }
+        break;
+
+      case 0x02:  // Blink LED value times
+        for (int i = 0; i < value; i++) {
+          digitalWrite(ledPin, HIGH);
+          delay(200);
+          digitalWrite(ledPin, LOW);
+          delay(200);
+        }
+        result = value;
+        break;
+
+      // Add more cases here for new commands
+
+      default:
+        result = 0xFF;  // Unknown command
+        break;
+    }
+
+    status = 1;  // Ready to report back
+  }
+}
+
+void receiveEvent(int howMany) {
+  if (howMany >= 2) {
+    command = Wire.read();
+    value = Wire.read();
+    status = 0;  // Reset status to indicate "working"
+  }
+}
+
+void requestEvent() {
+  Wire.write(status);  // Byte 0: status (0 or 1)
+  Wire.write(result);  // Byte 1: result or data
 }
