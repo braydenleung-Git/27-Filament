@@ -1,0 +1,21 @@
+int sensorPin = A0;
+int buzzerPin = 9;
+int threshold = 520; // tune this based on testing
+
+void setup() {
+  pinMode(buzzerPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int reading = analogRead(sensorPin);
+  Serial.println(reading);
+
+  if (reading > threshold) {
+    digitalWrite(buzzerPin, HIGH);
+  } else {
+    digitalWrite(buzzerPin, LOW);
+  }
+
+  delay(10);
+}
