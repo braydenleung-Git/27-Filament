@@ -19,7 +19,7 @@ void loop() {
 
   if (isPressed) {
     myStepper.step(1);
-    stepCount++;
+    stepCount++;x
     wasPressed = true;
   } else {
     if (wasPressed) {
